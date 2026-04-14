@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/threadle.svg)](https://pypi.org/project/threadle/)
 [![Python](https://img.shields.io/pypi/pyversions/threadle.svg)](https://pypi.org/project/threadle/)
 [![GitHub](https://img.shields.io/badge/GitHub-repository-181717?logo=github)](https://github.com/lucianoramirezs/threadle)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1pd3hrD7VTbcJjximB4Q84ZkFOctGNzNM?usp=sharing)
 
 **Observabilidad de concurrencia en Python.** threadle modela un **grafo wait-for** (hilos y cerrojos instrumentados), **detecta ciclos** compatibles con deadlock y ofrece **líneas de tiempo** y **gráficos** para razonar sobre contención antes de optimizar a ciegas. Incluye un camino opcional para **asyncio** (dependencias entre tareas, Gantt de tareas).
 
