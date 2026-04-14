@@ -40,3 +40,4 @@ notebook/outputs/
 # Repo-local content not intended for git
 classNotebooks/
 plan.md
+.devcontainer/
