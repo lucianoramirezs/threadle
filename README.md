@@ -109,6 +109,79 @@ Gantt HTML interactivo (hilos): extra **`plotly`** → `pip install "threadle[pl
 
 ---
 
+## Outputs de ejemplo
+
+### 1) Wait-for graph (`scenario-b-wait-graph.png`)
+
+![Scenario B Wait-for Graph](notebook/outputs/scenario-b-wait-graph.png)
+
+Este gráfico muestra el estado de bloqueos en un snapshot puntual:
+- **Nodos `thread:*`**: hilos instrumentados.
+- **Nodos `lock:*`**: recursos bloqueables (`TrackedLock`).
+- **Aristas `thread -> lock`**: el hilo está esperando adquirir ese lock.
+- **Aristas `lock -> thread`**: el lock está actualmente en posesión de ese hilo.
+
+Si ves un ciclo dirigido completo (`thread -> lock -> thread -> ...`), tienes evidencia estructural de deadlock en ese instante.
+
+### 2) Demo end-to-end (`showcase-run-demo.png`)
+
+![Showcase Run Demo](notebook/outputs/showcase-run-demo.png)
+
+Este output resume un escenario de demo generado por el notebook:
+- combina el análisis de deadlock con visualización del estado del sistema,
+- sirve como artefacto para documentación, CI y post-mortems,
+- es útil para comparar cambios entre versiones (antes/después de un refactor de concurrencia).
+
+### Cómo leer rápidamente las imágenes
+
+- **Mucho `waiting` y pocos cambios de estado**: indica contención sostenida o posible bloqueo.
+- **Topología en cadena**: dependencia en serie, potencial cuello de botella.
+- **Topología cíclica**: señal fuerte de deadlock (confirmar con `analyze_deadlocks()`).
+- **Comparación entre runs**: usa mismos escenarios y evalúa si disminuye el tiempo de espera o se rompe el ciclo.
+
+---
+
+## Funciones y funcionalidades
+
+### Núcleo (threads y locks)
+
+| Función / API | Para qué sirve |
+|:--------------|:---------------|
+| `TrackedLock` | Lock instrumentado que alimenta el grafo wait-for y el timeline. |
+| `trace`, `trace_thread` | Decoradores para registrar ejecución de funciones/hilos con trazabilidad. |
+| `Session` | Context manager para activar trazado temporal y análisis en bloque. |
+| `start_tracing`, `stop_tracing`, `get_events`, `clear_events` | Control directo del pipeline de eventos. |
+
+### Análisis y diagnóstico
+
+| Función / API | Para qué sirve |
+|:--------------|:---------------|
+| `detect_deadlocks()` | Detección rápida de ciclo (salida simple). |
+| `analyze_deadlocks()` | Reporte estructurado (`DeadlockReport`) con summary y datos enriquecidos. |
+| `DeadlockReport.to_json()` | JSON estable para CI, alertas y adjuntos en incidencias. |
+| `export_debug_bundle_json()` | Snapshot completo del estado para post-mortem. |
+
+### Visualización y export
+
+| Función / API | Para qué sirve |
+|:--------------|:---------------|
+| `visualize()` | Grafo wait-for dirigido con flechas. |
+| `visualize_gantt()` | Timeline por hilo (running/waiting/holding). |
+| `export_gantt()` | Export de gráfico a archivo (PNG/HTML según configuración). |
+| `visualize_async_gantt()` | Timeline para tareas asyncio (cuando usas trazado async). |
+| `export_async_gantt()` | Export de timeline asyncio a PNG. |
+
+### CLI (operación rápida)
+
+| Comando | Funcionalidad |
+|:--------|:--------------|
+| `threadle detect` | Resultado directo de detección de ciclo. |
+| `threadle detect --json` | Diagnóstico serializable. |
+| `threadle snapshot` | Bundle de depuración completo para artefactos. |
+| `threadle demo --visualize` | Genera demo + imagen para validar el flujo end-to-end. |
+
+---
+
 ## CI, regresiones y post-mortems
 
 `export_debug_bundle_json()` y `DeadlockReport.to_json()` se prestan a artefactos en pipelines, adjuntos en incidencias y comparación de snapshots entre versiones.
