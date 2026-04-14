@@ -1,0 +1,17 @@
+# Source distribution: only package + metadata (no tests, scripts, notebooks).
+# The wheel already limits files via [tool.setuptools.packages.find]; this keeps
+# the sdist tarball aligned and avoids shipping the test suite on PyPI.
+
+include README.md
+include pyproject.toml
+graft threadle
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
+
+prune tests
+prune scripts
+prune notebook
+prune classNotebooks
+prune .github
+prune .devcontainer
